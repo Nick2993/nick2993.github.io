@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nikhilesh Yadav — Mobile Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10;
+    --bg2: #0d1520;
+    --accent: #00b87a;
+    --accent2: #00aaff;
+    --text: #c8d8e8;
+    --muted: #4a6070;
+    --border: rgba(0,184,122,0.15);
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Playfair Display', Georgia, serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* Original subtle green cursor glow */
+  .cursor-glow {
+    position: fixed;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,184,122,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    transform: translate(-50%, -50%);
+    transition: left 0.1s, top 0.1s;
+  }
+
+  /* Grid lines */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,184,122,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,184,122,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+
+
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,12,16,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo { font-size: 13px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
+
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HAMBURGER */
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; background: none; border: none; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px; transition: all 0.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none; position: fixed;
+    top: 61px; left: 0; right: 0;
+    background: rgba(8,12,16,0.97); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px; z-index: 99;
+    flex-direction: column; gap: 4px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    color: var(--muted); text-decoration: none;
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: color 0.2s;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--accent); }
+
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 48px 80px;
+  }
+
+  .hero-tag {
+    font-size: 11px; letter-spacing: 4px; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 700; color: #fff; line-height: 1.05; margin-bottom: 12px;
+    opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  .hero-title {
+    font-family: var(--serif); font-style: italic;
+    font-size: clamp(18px, 3vw, 28px);
+    color: var(--muted); margin-bottom: 36px;
+    opacity: 0; animation: fadeUp 0.7s ease forwards 0.6s;
+  }
+
+  .hero-desc {
+    font-size: 13px; color: #8090a0; line-height: 1.9; margin-bottom: 48px;
+    opacity: 0; animation: fadeUp 0.7s ease forwards 0.8s;
+  }
+
+  .hero-cta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.7s ease forwards 1s;
+  }
+
+  .btn-primary {
+    background: var(--accent); color: #080c10;
+    padding: 13px 32px; border-radius: 2px; text-decoration: none;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700; transition: all 0.2s; font-family: var(--mono); border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: #00d48c; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,184,122,0.25); }
+
+  .btn-outline {
+    border: 1px solid var(--border); color: var(--accent);
+    padding: 13px 32px; border-radius: 2px; text-decoration: none;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.2s; font-family: var(--mono); background: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-outline:hover { border-color: var(--accent); background: rgba(0,184,122,0.06); }
+
+  /* DIVIDER */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 0 48px; opacity: 0.2;
+  }
+
+  .section-wrap { max-width: 1100px; margin: 0 auto; padding: 70px 33px; }
+
+  .section-label {
+    font-size: 10px; letter-spacing: 4px; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: var(--serif); font-size: clamp(28px, 4vw, 42px);
+    color: #fff; font-weight: 700; margin-bottom: 60px;
+  }
+
+  /* SKILLS */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+  .skill-card {
+    background: rgba(13,21,32,0.8); border: 1px solid var(--border);
+    border-radius: 4px; padding: 24px; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0); transition: transform 0.3s; transform-origin: left;
+  }
+  .skill-card:hover { border-color: rgba(0,184,122,0.35); transform: translateY(-3px); }
+  .skill-card:hover::before { transform: scaleX(1); }
+
+  .skill-card-title { font-size: 11px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .skill-tag {
+    background: rgba(0,184,122,0.07); border: 1px solid rgba(0,184,122,0.15);
+    color: #a0c0b0; padding: 3px 10px; border-radius: 2px; font-size: 11px;
+  }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; }
+  .timeline::before {
+    content: ''; position: absolute;
+    left: 0; top: 8px; bottom: 0; width: 1px;
+    background: linear-gradient(180deg, var(--accent), transparent); opacity: 0.3;
+  }
+
+  .timeline-item { padding-left: 36px; padding-bottom: 52px; position: relative; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -4px; top: 8px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 12px rgba(0,184,122,0.5);
+  }
+
+  .job-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+  }
+
+  .job-title { font-family: var(--serif); font-size: 20px; color: #fff; font-weight: 700; }
+
+  .job-date {
+    font-size: 11px; color: var(--accent); letter-spacing: 1px;
+    padding: 3px 10px; border: 1px solid rgba(0,184,122,0.2);
+    border-radius: 2px; white-space: nowrap;
+  }
+
+  .job-company { font-size: 13px; color: var(--accent2); margin-bottom: 12px; }
+
+  .job-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .job-tech-pill {
+    background: rgba(0,170,255,0.07); border: 1px solid rgba(0,170,255,0.18);
+    color: #70a8c8; padding: 2px 9px; border-radius: 2px;
+    font-size: 10px; letter-spacing: 0.5px;
+  }
+
+  /* EDUCATION */
+  .edu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+  .edu-card {
+    background: rgba(13,21,32,0.8); border: 1px solid var(--border);
+    border-radius: 4px; padding: 28px; transition: all 0.3s;
+  }
+  .edu-card:hover { border-color: rgba(0,184,122,0.35); transform: translateY(-3px); }
+
+  .edu-degree { font-family: var(--serif); font-size: 18px; color: #fff; margin-bottom: 6px; }
+  .edu-school { font-size: 13px; color: var(--accent2); margin-bottom: 4px; }
+  .edu-year { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  /* CONTACT */
+  #contact { background: var(--bg2); }
+
+  .contact-inner {
+    max-width: 1100px; margin: 0 auto; padding: 100px 50px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+
+  .contact-heading { font-family: var(--serif); font-size: clamp(32px, 5vw, 56px); color: #fff; line-height: 1.1; margin-bottom: 20px; }
+  .contact-heading em { color: var(--accent); font-style: italic; }
+  .contact-sub { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+  .contact-links { display: flex; flex-direction: column; gap: 16px; }
+
+  .contact-link {
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: var(--text);
+    padding: 16px 20px; border: 1px solid var(--border);
+    border-radius: 4px; transition: all 0.25s;
+  }
+  .contact-link:hover { border-color: var(--accent); background: rgba(0,184,122,0.05); transform: translateX(6px); }
+
+  .contact-icon {
+    width: 36px; height: 36px;
+    background: rgba(0,184,122,0.1); border: 1px solid rgba(0,184,122,0.2);
+    border-radius: 2px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .contact-icon svg { width: 17px; height: 17px; }
+
+  .contact-link-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; display: block; }
+  .contact-link-value { font-size: 13px; color: var(--text); }
+
+  footer {
+    text-align: center; padding: 28px 48px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted); letter-spacing: 1px;
+    position: relative; z-index: 1;
+  }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    #hero { padding: 100px 24px 60px; }
+    .section-wrap { padding: 64px 24px; }
+    .section-divider { margin: 0 24px; }
+    .contact-inner { grid-template-columns: 1fr; gap: 40px; padding: 64px 24px; }
+    footer { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">NY / Dev</div>
+  <div class="nav-links">
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#skills"     onclick="closeMobile()">Skills</a>
+  <a href="#experience" onclick="closeMobile()">Experience</a>
+  <a href="#education"  onclick="closeMobile()">Education</a>
+  <a href="#contact"    onclick="closeMobile()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+   <div class="section-wrap">
+    <p class="hero-tag">Mobile Application Developer</p>
+    <h1 class="hero-name">Nikhilesh<br/>Yadav</h1>
+    <p class="hero-title">Android · Kotlin · React Native</p>
+    <p class="hero-desc">
+      5+ years building production mobile solutions at field scale. Specializing in Android (Kotlin/Java)
+      with deep expertise in hardware integration - NFC, BLE, Bluetooth Classic, RFID - and end-to-end
+      ownership from architecture to release.
+    </p>
+    <div class="hero-cta">
+      <a href="#experience" class="btn-primary">View Experience</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+      <a href="Nikhilesh_Yadav_Resume.pdf" download class="btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Resume
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-wrap">
+    <p class="section-label reveal">Technical Skills</p>
+    <h2 class="section-title reveal">What I Build With</h2>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-card-title">Android Development</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Kotlin</span><span class="skill-tag">Java</span>
+          <span class="skill-tag">Coroutines</span><span class="skill-tag">MVVM</span>
+          <span class="skill-tag">Services</span><span class="skill-tag">Broadcast Receivers</span>
+          <span class="skill-tag">CameraX</span>
+        </div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-card-title">Cross-Platform</div>
+        <div class="skill-tags">
+          <span class="skill-tag">React Native</span><span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">Native Modules</span><span class="skill-tag">iOS (Swift)</span>
+          <span class="skill-tag">RN → Kotlin Bridge</span>
+        </div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-card-title">Hardware Integration</div>
+        <div class="skill-tags">
+          <span class="skill-tag">NFC ISO-DEP/APDU</span><span class="skill-tag">BLE</span>
+          <span class="skill-tag">Bluetooth Classic</span><span class="skill-tag">RFID</span>
+          <span class="skill-tag">SDK Design</span>
+        </div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-card-title">Backend & Data</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Retrofit</span><span class="skill-tag">REST APIs</span>
+          <span class="skill-tag">SQLite / Room</span><span class="skill-tag">Offline-First</span>
+          <span class="skill-tag">JWT Auth</span><span class="skill-tag">AES/RSA</span>
+        </div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-card-title">Testing & Quality</div>
+        <div class="skill-tags">
+          <span class="skill-tag">JUnit</span><span class="skill-tag">Mockito</span>
+          <span class="skill-tag">Espresso</span><span class="skill-tag">Jest</span>
+        </div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-card-title">Observability</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Datadog</span><span class="skill-tag">Android Logging</span>
+          <span class="skill-tag">RN Logging</span><span class="skill-tag">iOS Logging</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-wrap">
+    <p class="section-label reveal">Experience</p>
+    <h2 class="section-title reveal">Where I've Worked</h2>
+
+    <div class="timeline">
+
+      <div class="timeline-item reveal">
+        <div class="job-header">
+          <h3 class="job-title">Mobile Application Developer</h3>
+          <span class="job-date">Feb 2024 – Present</span>
+        </div>
+        <p class="job-company">Position Imaging, Inc. · Stratham, NH</p>
+        <div class="job-tech">
+          <span class="job-tech-pill">Kotlin</span><span class="job-tech-pill">Android SDK</span>
+          <span class="job-tech-pill">React Native</span><span class="job-tech-pill">TypeScript</span>
+          <span class="job-tech-pill">NFC ISO-DEP/APDU</span><span class="job-tech-pill">BLE</span>
+          <span class="job-tech-pill">Bluetooth Classic</span><span class="job-tech-pill">Retrofit</span>
+          <span class="job-tech-pill">CameraX</span><span class="job-tech-pill">Services</span>
+          <span class="job-tech-pill">Broadcast Receivers</span><span class="job-tech-pill">Datadog</span>
+          <span class="job-tech-pill">Swift (iOS logging)</span>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="job-header">
+          <h3 class="job-title">Android Developer</h3>
+          <span class="job-date">Nov 2020 – Dec 2021</span>
+        </div>
+        <p class="job-company">Rentokil PCI · Mumbai, MH</p>
+        <div class="job-tech">
+          <span class="job-tech-pill">Kotlin</span><span class="job-tech-pill">Java</span>
+          <span class="job-tech-pill">XML Layouts</span><span class="job-tech-pill">REST APIs</span>
+          <span class="job-tech-pill">JWT Auth</span><span class="job-tech-pill">AES/RSA Encryption</span>
+          <span class="job-tech-pill">Push Notifications</span>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="job-header">
+          <h3 class="job-title">Mobile Application Developer</h3>
+          <span class="job-date">May 2019 – Oct 2019</span>
+        </div>
+        <p class="job-company">Sanda Office & Management Services · Mumbai, MH</p>
+        <div class="job-tech">
+          <span class="job-tech-pill">Android SDK</span><span class="job-tech-pill">Java</span>
+          <span class="job-tech-pill">Camera API</span><span class="job-tech-pill">SQLite</span>
+          <span class="job-tech-pill">Contacts API</span>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="job-header">
+          <h3 class="job-title">Trainee Software Engineer</h3>
+          <span class="job-date">Jan 2018 – Apr 2019</span>
+        </div>
+        <p class="job-company">Intelliswift India Pvt. Ltd. · Mumbai, MH</p>
+        <div class="job-tech">
+          <span class="job-tech-pill">Python</span><span class="job-tech-pill">Web Scraping</span>
+          <span class="job-tech-pill">Regex</span><span class="job-tech-pill">CRON Jobs</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-wrap">
+    <p class="section-label reveal">Education</p>
+    <h2 class="section-title reveal">Academic Background</h2>
+    <div class="edu-grid">
+      <div class="edu-card reveal">
+        <div style="font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:14px;">Graduate</div>
+        <div class="edu-degree">M.S. Computer Information Science</div>
+        <div class="edu-school">Indiana University Purdue University Indianapolis</div>
+        <div class="edu-year">Jan 2022 - Dec 2023 · Indianapolis, IN</div>
+      </div>
+      <div class="edu-card reveal">
+        <div style="font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:14px;">Undergraduate</div>
+        <div class="edu-degree">B.E. Information Technology</div>
+        <div class="edu-school">Mumbai University</div>
+        <div class="edu-year">July 2014 - Mar 2017 · Mumbai, India</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="reveal">
+      <p class="section-label">Contact</p>
+      <h2 class="contact-heading">Let's build<br/><em>something great.</em></h2>
+      <p class="contact-sub">Let's connect.</p>
+    </div>
+
+    <div class="contact-links reveal">
+      <!-- Email -->
+      <a href="mailto:nikhileshyadav29@gmail.com" class="contact-link">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00b87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div>
+          <span class="contact-link-label">Email</span>
+          <span class="contact-link-value">nikhileshyadav29@gmail.com</span>
+        </div>
+      </a>
+
+      <!-- LinkedIn -->
+      <a href="https://linkedin.com/in/nick2993/" target="_blank" class="contact-link">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="#00b87a">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <span class="contact-link-label">LinkedIn</span>
+          <span class="contact-link-value">linkedin.com/in/nick2993</span>
+        </div>
+      </a>
+
+      <!-- GitHub -->
+      <a href="https://github.com/nick2993" target="_blank" class="contact-link">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="#00b87a">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="contact-link-label">GitHub</span>
+          <span class="contact-link-value">github.com/nick2993</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Nikhilesh Yadav</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Cursor glow
+  const glow = document.getElementById('cursorGlow');
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top  = e.clientY + 'px';
+  });
+
+  // Hamburger
+  const hamburger  = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  function closeMobile() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  }
+
+  // Scroll
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting)
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
